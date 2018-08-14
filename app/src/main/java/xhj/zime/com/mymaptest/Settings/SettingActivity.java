@@ -19,7 +19,6 @@ public class SettingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        getSupportActionBar().hide();
         ImageButton seetting_img_back_to_main = (ImageButton) findViewById(R.id.setting_back_to_main);
         seetting_img_back_to_main.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -20,9 +20,9 @@
         android:layout_marginTop="80dp"
         android:background="@drawable/shape_oval_edit"
         android:gravity="center"
-        android:hint="用户名"
+        android:hint="@string/user_name"
         android:textColorHint="@color/gray"
-        android:textSize="15sp"/>
+        android:textSize="15sp" />
 
     <EditText
         android:id="@+id/password_edit"
@@ -32,10 +32,10 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/shape_oval_edit"
         android:gravity="center"
-        android:hint="@string/psw"
+        android:hint="@string/user_password"
         android:inputType="textPassword"
         android:textColorHint="@color/gray"
-        android:textSize="15sp"/>
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/login_btn"
@@ -44,7 +44,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp"
         android:background="@drawable/shape_oval_button"
-        android:text="登陆"
+        android:text="@string/btn_login"
         android:textColor="@color/colorWhite"
         android:textSize="15sp" />
 

@@ -4,6 +4,8 @@
     <string name="sure">确定</string>
     <string name="tip">提示</string>
     <string name="progress">进度查看</string>
-    <string name="psw">密码</string>
+    <string name="user_password">密码</string>
+    <string name="user_name">用户名</string>
+    <string name="btn_login">登陆</string>
 
 </resources>

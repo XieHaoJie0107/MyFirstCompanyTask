@@ -18,6 +18,7 @@ import okhttp3.Response;
 import xhj.zime.com.mymaptest.ActivityCollector.BaseActivity;
 import xhj.zime.com.mymaptest.Main.MainActivity;
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.MyUserString;
 import xhj.zime.com.mymaptest.Util.HttpUtil;
 import xhj.zime.com.mymaptest.Util.Utility;
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
@@ -32,12 +33,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getSupportActionBar().hide();
         initView();
-        String user = preferences.getString("user", "liyu");
-        String password = preferences.getString("password", "123456");
+        String user = preferences.getString(MyUserString.userString, "liyu");
+        String password = preferences.getString(MyUserString.passwordString, "123456");
         user_edit.setText(user);
         password_edit.setText(password);
+        loginBtn.setOnClickListener(this);
     }
 
     private void initView() {
@@ -50,7 +51,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void queryFromService() {
         String loginName = user_edit.getText().toString();
         String password = password_edit.getText().toString();
-        String address = "http://192.168.1.244:8080/user/login?loginName=" + loginName + "&password=" + password;
+        String address = HttpUtil.baseUrl + "user/login?loginName=" + loginName + "&password=" + password;
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
