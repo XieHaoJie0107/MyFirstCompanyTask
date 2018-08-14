@@ -7,5 +7,9 @@
     <string name="user_password">密码</string>
     <string name="user_name">用户名</string>
     <string name="btn_login">登陆</string>
+    <string name="task_list">任务列表</string>
+    <string name="task_upload">任务上传</string>
+    <string name="task_download">同步任务</string>
+    <string name="task_power_off">退出登录</string>
 
 </resources>

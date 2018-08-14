@@ -9,7 +9,8 @@ import org.json.JSONObject;
 
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
 import xhj.zime.com.mymaptest.bean.BaseDataBean;
-import xhj.zime.com.mymaptest.bean.TaskBean;
+import xhj.zime.com.mymaptest.bean.DataBean;
+import xhj.zime.com.mymaptest.bean.TaskBeansBean;
 import xhj.zime.com.mymaptest.bean.UserBean;
 
 public class Utility {
@@ -28,13 +29,26 @@ public class Utility {
         return null;
     }
 
-    public static TaskBean handleTaskResponse(String response){
+    public static TaskBeansBean handleTaskBeansResponse(String response){
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONObject jsonObject = new JSONObject(response);
                 String userString  = jsonObject.toString();
                 Gson gson = new Gson();
-                return gson.fromJson(userString,TaskBean.class);
+                return gson.fromJson(userString,TaskBeansBean.class);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public static DataBean handleDataResponse(String response){
+        if (!TextUtils.isEmpty(response)){
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String userString  = jsonObject.toString();
+                Gson gson = new Gson();
+                return gson.fromJson(userString,DataBean.class);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

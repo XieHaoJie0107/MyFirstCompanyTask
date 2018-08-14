@@ -14,22 +14,22 @@
 
 
         <LinearLayout
-            android:background="@color/title"
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@color/title"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
-                android:background="@color/title"
                 android:id="@+id/personal_img_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginStart="8dp"
+                android:background="@color/title"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/user_mag" />
 
@@ -40,8 +40,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="电缆管网移动巡查"
-                android:textSize="20sp"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
 
             <ImageButton
                 android:id="@+id/setting_img_btn"
@@ -49,9 +49,9 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginEnd="8dp"
+                android:background="@color/title"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/set"
-                android:background="@color/title"/>
+                android:src="@mipmap/set" />
         </LinearLayout>
 
         <TextView
@@ -67,12 +67,11 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
     </LinearLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
+    <fragment
+        android:name="xhj.zime.com.mymaptest.Main.PersonalCenterFragment"
+        android:id="@+id/fragment_personal_center"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:menu="@menu/nav_menu"
-        />
+        android:layout_gravity="start"/>
 
 </android.support.v4.widget.DrawerLayout>
