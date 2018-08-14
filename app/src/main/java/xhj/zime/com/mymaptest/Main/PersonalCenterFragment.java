@@ -1,26 +1,42 @@
 package xhj.zime.com.mymaptest.Main;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +48,7 @@ import okhttp3.Response;
 import xhj.zime.com.mymaptest.ActivityCollector.ActivityCollector;
 import xhj.zime.com.mymaptest.Login.LoginActivity;
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 import xhj.zime.com.mymaptest.TaskList.TaskListActivity;
 import xhj.zime.com.mymaptest.Util.HttpUtil;
@@ -41,16 +58,19 @@ import xhj.zime.com.mymaptest.bean.DataBean;
 import xhj.zime.com.mymaptest.bean.TaskBeansBean;
 import xhj.zime.com.mymaptest.bean.TaskPointBeansBean;
 
+import static android.app.Activity.RESULT_OK;
+
 public class PersonalCenterFragment extends Fragment implements View.OnClickListener {
     private TextView list, download, upload, powerOffLogin, userName, userClassName;
     private ProgressDialog progressDialog;
+    private ImageView userImage;
 
-    public static final int TASK_STATUS_WANGCHENG = 0;
-    public static final int TASK_STATUS_DANGQIAN = 1;
-    public static final int TASK_STATUS_YIQIDONG = 2;
-    public static final int TASK_STATUS_WEIQIDONG = 3;
-    public static final int TASK_STATUS_SHANGCHUAN_SHIBAI = 4;
-    public static final int TASK_STATUS_SHANGCHUAN_CHENGGONG = 5;
+    //定义意图返回的请求码,是拍摄照片还是去系统相册选择照片
+    public static final int TAKE_PHOTO = 1;
+    public static final int CHOOSE_PHOTO = 2;
+
+    //会用到数据共享器,拍摄的照片用uri作为定位共享出去
+    private static Uri imageUri;
 
     @Nullable
     @Override
@@ -62,6 +82,7 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         powerOffLogin = (TextView) view.findViewById(R.id.power_off_login);
         userName = (TextView) view.findViewById(R.id.name_text);
         userClassName = (TextView) view.findViewById(R.id.class_text);
+        userImage = (ImageView) view.findViewById(R.id.user_image);
         return view;
     }
 
@@ -72,6 +93,7 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         download.setOnClickListener(this);
         upload.setOnClickListener(this);
         powerOffLogin.setOnClickListener(this);
+        userImage.setOnClickListener(this);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         userName.setText(preferences.getString("userName", null));
         userClassName.setText(preferences.getString("userClassName", null));
@@ -82,7 +104,7 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         switch (view.getId()) {
             case R.id.list:
                 View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.alert_dialog, null);
-                final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                AlertDialog dialog = new AlertDialog.Builder(getContext())
                         .setView(view1)
                         .create();
                 TextView task, flaw;
@@ -108,7 +130,76 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.user_image:
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                } else {
+                    openAlbum();
+                }
+                break;
+            default:
+                break;
         }
+    }
+
+    private void openAlbum() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_PHOTO);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    handleImageOnKitKat(data);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(getContext(), uri)) {
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.media.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            imagePath = getImagePath(uri, null);
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            imagePath = uri.getPath();
+        }
+        displayImage(imagePath);
+    }
+
+    private void displayImage(String imagePath) {
+        if (imagePath != null) {
+            Glide.with(this).load(imagePath).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
+        } else {
+            Toast.makeText(getContext(), "加载图片失败!", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = getActivity().getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
     }
 
     private void downloadTask(String address) {
@@ -140,7 +231,6 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                     SQLiteDatabase db = new SQLdm().openDatabase(getContext());
                     Object data = baseDataBack.getData();
                     DataBean dataBean = Utility.handleDataResponse(gson.toJson(data));
-//                    Log.i("-----------------", gson.toJson(data).toString());
                     List<TaskBeansBean> taskBeans = dataBean.getTaskBeans();
                     ContentValues values = new ContentValues();
                     for (TaskBeansBean taskBeansBean : taskBeans) {
@@ -168,7 +258,7 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                         values.put("team_type", team_type);
                         values.put("user_id", user_id);
                         values.put("task_confirm_time", real);
-                        values.put("task_status", TASK_STATUS_WEIQIDONG);
+                        values.put("task_status", TaskStatusString.TASK_STATUS_WEIQIDONG);
                         db.insert("tasklist", null, values);
                     }
                     List<TaskPointBeansBean> taskPointBeans = dataBean.getTaskPointBeans();
