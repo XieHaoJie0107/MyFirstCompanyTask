@@ -66,15 +66,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
-                UserBean userBean = Utility.handleUserResponse(responseText);
-                userBean.getCode();
-                if ("请求成功".equals(userBean.getMsg())) {
-                    String userClassName = userBean.getData().getOrg() + "/" + userBean.getData().getGroup() + "/" + userBean.getData().getGroupName();
+                BaseDataBack baseDataBack = Utility.handleBaseDataBackResponse(responseText);
+                int responseCode = baseDataBack.getCode();
+                if (responseCode == 1) {
+                    UserBean userBean = Utility.handleUserResponse(baseDataBack.getData().toString());
+                    String userClassName = userBean.getOrg() + "/" + userBean.getGroup() + "/" + userBean.getGroupName();
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("user", userBean.getData().getLoginName());
-                    editor.putString("password", userBean.getData().getPassword());
-                    editor.putInt("userId", userBean.getData().getUserId());
-                    editor.putString("userName", userBean.getData().getUserName());
+                    editor.putString("user", userBean.getLoginName());
+                    editor.putString("password", userBean.getPassword());
+                    editor.putInt("userId", userBean.getUserId());
+                    editor.putString("userName", userBean.getUserName());
                     editor.putString("userClassName", userClassName);
                     editor.commit();
 

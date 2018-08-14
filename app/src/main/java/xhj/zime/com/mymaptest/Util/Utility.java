@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import xhj.zime.com.mymaptest.bean.BaseDataBack;
 import xhj.zime.com.mymaptest.bean.BaseDataBean;
 import xhj.zime.com.mymaptest.bean.TaskBean;
 import xhj.zime.com.mymaptest.bean.UserBean;
@@ -34,6 +35,19 @@ public class Utility {
                 String userString  = jsonObject.toString();
                 Gson gson = new Gson();
                 return gson.fromJson(userString,TaskBean.class);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public static BaseDataBack handleBaseDataBackResponse(String response) {
+        if (!TextUtils.isEmpty(response)){
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String userString  = jsonObject.toString();
+                Gson gson = new Gson();
+                return gson.fromJson(userString,BaseDataBack.class);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
