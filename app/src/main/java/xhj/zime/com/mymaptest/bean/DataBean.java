@@ -5,8 +5,8 @@ import java.util.List;
 public class DataBean {
     private List<TaskBeansBean> taskBeans;
     private List<TaskPointBeansBean> taskPointBeans;
-    private List<?> flawBeans;
-    private List<?> adjunctBeans;
+    private List<FlawBean> flawBeans;
+    private List<AdjunctBean> adjunctBeans;
 
     public List<TaskBeansBean> getTaskBeans() {
         return taskBeans;
@@ -24,19 +24,19 @@ public class DataBean {
         this.taskPointBeans = taskPointBeans;
     }
 
-    public List<?> getFlawBeans() {
+    public List<FlawBean> getFlawBeans() {
         return flawBeans;
     }
 
-    public void setFlawBeans(List<?> flawBeans) {
+    public void setFlawBeans(List<FlawBean> flawBeans) {
         this.flawBeans = flawBeans;
     }
 
-    public List<?> getAdjunctBeans() {
+    public List<AdjunctBean> getAdjunctBeans() {
         return adjunctBeans;
     }
 
-    public void setAdjunctBeans(List<?> adjunctBeans) {
+    public void setAdjunctBeans(List<AdjunctBean> adjunctBeans) {
         this.adjunctBeans = adjunctBeans;
     }
 }

@@ -1,9 +1,12 @@
 package xhj.zime.com.mymaptest.Util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,14 +47,9 @@ public class Utility {
     }
     public static DataBean handleDataResponse(String response){
         if (!TextUtils.isEmpty(response)){
-            try {
-                JSONObject jsonObject = new JSONObject(response);
-                String userString  = jsonObject.toString();
-                Gson gson = new Gson();
-                return gson.fromJson(userString,DataBean.class);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Gson gson = new Gson();
+            DataBean dataBean = gson.fromJson(response, DataBean.class);
+            return dataBean;
         }
         return null;
     }

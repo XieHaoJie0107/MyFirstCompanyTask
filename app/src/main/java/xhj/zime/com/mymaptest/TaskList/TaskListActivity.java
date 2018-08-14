@@ -24,7 +24,6 @@ public class TaskListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_task_list);
         recyclerView = (RecyclerView) findViewById(R.id.task_list_recycler_view);
         adapter = new TaskAdapter(list);
