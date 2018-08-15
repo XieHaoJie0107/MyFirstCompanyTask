@@ -65,6 +65,7 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
     private TextView list, download, upload, powerOffLogin, userName, userClassName;
     private ProgressDialog progressDialog;
     private ImageView userImage;
+    private static final String TAG = "-----------------";
 
     //定义意图返回的请求码,是拍摄照片还是去系统相册选择照片
     public static final int TAKE_PHOTO = 1;
@@ -161,30 +162,34 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
     }
 
     private void saveImg() {
-        Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-        byte[] bytes = outputStream.toByteArray();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                byte[] bytes = outputStream.toByteArray();
+                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        SQLiteDatabase db = new SQLdm().openDatabase(this.getContext());
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-
-        int userId = preferences.getInt("userId", -1);
-        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
-        Log.i("---------------", String.valueOf(cursor.moveToNext()));
-        if (cursor.moveToNext()){
-            Log.i("---------------", userId + "更新头像");
-            ContentValues values = new ContentValues();
-            values.put("user_img", bytes);
-            db.update("express", values, "user_id = ?",new String[]{userId+""});
-        }else {
-            Log.i("------------", userId + "设置头像");
-            ContentValues values = new ContentValues();
-            values.put("user_id", userId);
-            values.put("user_img", bytes);
-            db.insert("express", null, values);
-        }
-        db.close();
+                int userId = preferences.getInt("userId", -1);
+                Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
+                Log.i("---------------", String.valueOf(cursor.moveToNext()));
+                if (cursor.moveToFirst()){
+                    Log.i("---------------", userId + "更新头像");
+                    ContentValues values = new ContentValues();
+                    values.put("user_img", bytes);
+                    db.update("express", values, "user_id = ?",new String[]{userId+""});
+                }else {
+                    Log.i("------------", userId + "设置头像");
+                    ContentValues values = new ContentValues();
+                    values.put("user_id", userId);
+                    values.put("user_img", bytes);
+                    db.insert("express", null, values);
+                }
+                db.close();
+            }
+        }).start();
     }
 
     private void openAlbum() {
