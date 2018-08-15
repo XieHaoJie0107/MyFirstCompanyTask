@@ -36,6 +36,10 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 
+import org.litepal.FluentQuery;
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,6 +52,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import xhj.zime.com.mymaptest.ActivityCollector.ActivityCollector;
 import xhj.zime.com.mymaptest.Login.LoginActivity;
+import xhj.zime.com.mymaptest.Model.Express;
 import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
@@ -173,6 +178,8 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
                 int userId = preferences.getInt("userId", -1);
+                Express express = new Express();
+                List<Express> expresses = LitePal.where("user_id = ?", String.valueOf(userId)).find(Express.class);
                 Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
                 Log.i("---------------", String.valueOf(cursor.moveToNext()));
                 if (cursor.moveToFirst()){
