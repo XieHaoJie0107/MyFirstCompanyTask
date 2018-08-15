@@ -36,6 +36,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -72,6 +73,8 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
     //会用到数据共享器,拍摄的照片用uri作为定位共享出去
     private static Uri imageUri;
 
+    private String imgPath;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -97,6 +100,21 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         userName.setText(preferences.getString("userName", null));
         userClassName.setText(preferences.getString("userClassName", null));
+        loadImg();
+    }
+
+    private void loadImg() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int userId = preferences.getInt("userId",-1);
+        SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
+        if (cursor.moveToFirst()){
+            Log.i("---------------", "进来了: 初始化头像");
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("user_img"));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+            Glide.with(this).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
+        }
+        db.close();
     }
 
     @Override
@@ -142,6 +160,33 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         }
     }
 
+    private void saveImg() {
+        Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+        byte[] bytes = outputStream.toByteArray();
+
+        SQLiteDatabase db = new SQLdm().openDatabase(this.getContext());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        int userId = preferences.getInt("userId", -1);
+        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
+        Log.i("---------------", String.valueOf(cursor.moveToNext()));
+        if (cursor.moveToNext()){
+            Log.i("---------------", userId + "更新头像");
+            ContentValues values = new ContentValues();
+            values.put("user_img", bytes);
+            db.update("express", values, "user_id = ?",new String[]{userId+""});
+        }else {
+            Log.i("------------", userId + "设置头像");
+            ContentValues values = new ContentValues();
+            values.put("user_id", userId);
+            values.put("user_img", bytes);
+            db.insert("express", null, values);
+        }
+        db.close();
+    }
+
     private void openAlbum() {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
@@ -180,16 +225,19 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             imagePath = uri.getPath();
         }
+        imgPath = imagePath;
         displayImage(imagePath);
     }
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
+            saveImg();
             Glide.with(this).load(imagePath).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
         } else {
             Toast.makeText(getContext(), "加载图片失败!", Toast.LENGTH_SHORT).show();
         }
     }
+
     private String getImagePath(Uri uri, String selection) {
         String path = null;
         Cursor cursor = getActivity().getContentResolver().query(uri, null, selection, null, null);
