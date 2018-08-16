@@ -112,15 +112,24 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
     private void loadImg() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         int userId = preferences.getInt("userId",-1);
-        SQLiteDatabase db = new SQLdm().openDatabase(getContext());
-        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
-        if (cursor.moveToFirst()){
-            Log.i("---------------", "进来了: 初始化头像");
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("user_img"));
+        Log.i(TAG, "loadImg: "+userId);
+        List<Express> expresses = LitePal.where("user_id = ?", String.valueOf(userId)).find(Express.class);
+        if (expresses.size() > 0){
+            Log.i(TAG, "loadImg: size > 0,设置数据");
+            Express express = expresses.get(0);
+            byte[] bytes = express.getUser_img();
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
             Glide.with(this).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
         }
-        db.close();
+//        SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+//        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
+//        if (cursor.moveToFirst()){
+//            Log.i("---------------", "进来了: 初始化头像");
+//            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("user_img"));
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+//            Glide.with(this).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
+//        }
+//        db.close();
     }
 
     @Override
@@ -174,27 +183,38 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
                 byte[] bytes = outputStream.toByteArray();
-                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+//                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
                 int userId = preferences.getInt("userId", -1);
-                Express express = new Express();
                 List<Express> expresses = LitePal.where("user_id = ?", String.valueOf(userId)).find(Express.class);
-                Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
-                Log.i("---------------", String.valueOf(cursor.moveToNext()));
-                if (cursor.moveToFirst()){
-                    Log.i("---------------", userId + "更新头像");
-                    ContentValues values = new ContentValues();
-                    values.put("user_img", bytes);
-                    db.update("express", values, "user_id = ?",new String[]{userId+""});
+                if (expresses.size() > 0){
+                    Log.i(TAG, "run: 更新头像信息");
+                    Express express = new Express();
+                    express.setUser_img(bytes);
+                    express.updateAll("user_id = ?",String.valueOf(userId));
                 }else {
-                    Log.i("------------", userId + "设置头像");
-                    ContentValues values = new ContentValues();
-                    values.put("user_id", userId);
-                    values.put("user_img", bytes);
-                    db.insert("express", null, values);
+                    Log.i(TAG, "run: 保存头像,设置头像成功");
+                    Express express = new Express();
+                    express.setUser_id(userId);
+                    express.setUser_img(bytes);
+                    express.save();
                 }
-                db.close();
+//                Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
+//                Log.i("---------------", String.valueOf(cursor.moveToNext()));
+//                if (cursor.moveToFirst()){
+//                    Log.i("---------------", userId + "更新头像");
+//                    ContentValues values = new ContentValues();
+//                    values.put("user_img", bytes);
+//                    db.update("express", values, "user_id = ?",new String[]{userId+""});
+//                }else {
+//                    Log.i("------------", userId + "设置头像");
+//                    ContentValues values = new ContentValues();
+//                    values.put("user_id", userId);
+//                    values.put("user_img", bytes);
+//                    db.insert("express", null, values);
+//                }
+//                db.close();
             }
         }).start();
     }
