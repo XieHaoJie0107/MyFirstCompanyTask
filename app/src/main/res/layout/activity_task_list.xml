@@ -11,6 +11,8 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:paddingStart="5dp"
+            android:paddingEnd="10dp"
             android:background="@color/title"
             android:scaleType="fitCenter"
             android:id="@+id/setting_back_to_main"
@@ -26,7 +28,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="任务列表"
+            android:text="@string/task_list_xunjian"
             android:textSize="20sp"
             android:textColor="@color/colorWhite"/>
 

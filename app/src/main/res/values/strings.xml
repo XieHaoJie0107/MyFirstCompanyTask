@@ -11,5 +11,6 @@
     <string name="task_upload">任务上传</string>
     <string name="task_download">同步任务</string>
     <string name="task_power_off">退出登录</string>
+    <string name="task_list_xunjian">巡检任务</string>
 
 </resources>

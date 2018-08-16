@@ -24,6 +24,8 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
+                android:paddingStart="5dp"
+                android:paddingEnd="10dp"
                 android:id="@+id/personal_img_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -44,6 +46,8 @@
                 android:textSize="20sp" />
 
             <ImageButton
+                android:paddingStart="5dp"
+                android:paddingEnd="10dp"
                 android:id="@+id/setting_img_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
