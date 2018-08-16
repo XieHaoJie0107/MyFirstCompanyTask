@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,12 +35,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 
-import org.litepal.FluentQuery;
-import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +47,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import xhj.zime.com.mymaptest.ActivityCollector.ActivityCollector;
 import xhj.zime.com.mymaptest.Login.LoginActivity;
-import xhj.zime.com.mymaptest.Model.Express;
 import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
@@ -106,30 +100,36 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         userName.setText(preferences.getString("userName", null));
         userClassName.setText(preferences.getString("userClassName", null));
-        loadImg();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadImg();
+            }
+        }).start();
     }
 
     private void loadImg() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int userId = preferences.getInt("userId",-1);
-        Log.i(TAG, "loadImg: "+userId);
-        List<Express> expresses = LitePal.where("user_id = ?", String.valueOf(userId)).find(Express.class);
-        if (expresses.size() > 0){
-            Log.i(TAG, "loadImg: size > 0,设置数据");
-            Express express = expresses.get(0);
-            byte[] bytes = express.getUser_img();
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-            Glide.with(this).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
+        int userId = preferences.getInt("userId", -1);
+        Log.i(TAG, "loadImg: " + userId);
+        SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+        db.isOpen();
+        String sqlStr = "select * from express where user_id=?";
+        Cursor cursor = db.rawQuery(sqlStr, new String[]{userId + ""});
+        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("user_img"));
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(getActivity()).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
+                    Log.i("---------------", "进来了: 初始化头像");
+                }
+            });
+
         }
-//        SQLiteDatabase db = new SQLdm().openDatabase(getContext());
-//        Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
-//        if (cursor.moveToFirst()){
-//            Log.i("---------------", "进来了: 初始化头像");
-//            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("user_img"));
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-//            Glide.with(this).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
-//        }
-//        db.close();
+        cursor.close();
+        db.close();
     }
 
     @Override
@@ -153,8 +153,10 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 dialog.show();
                 break;
             case R.id.download:
-                String address = HttpUtil.baseUrl + "task/data/download?userid=26&pageSize=10&pageNo=1";
-                downloadTask(address);
+                Intent intent1 = new Intent(getContext(), TaskDownLoadActivity.class);
+                getActivity().startActivity(intent1);
+//                String address = HttpUtil.baseUrl + "task/data/download?userid=26&pageSize=10&pageNo=1";
+//                downloadTask(address);
                 break;
             case R.id.upload:
                 break;
@@ -180,41 +182,35 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
             @Override
             public void run() {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+                int byteCount = bitmap.getByteCount();
+                int maxSize = 1024 * 1024 * 3;
+                int mQuality = 80;
+                if (byteCount > maxSize) {
+                    mQuality = 20;
+                }
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, mQuality, outputStream);
                 byte[] bytes = outputStream.toByteArray();
-//                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
                 int userId = preferences.getInt("userId", -1);
-                List<Express> expresses = LitePal.where("user_id = ?", String.valueOf(userId)).find(Express.class);
-                if (expresses.size() > 0){
-                    Log.i(TAG, "run: 更新头像信息");
-                    Express express = new Express();
-                    express.setUser_img(bytes);
-                    express.updateAll("user_id = ?",String.valueOf(userId));
-                }else {
-                    Log.i(TAG, "run: 保存头像,设置头像成功");
-                    Express express = new Express();
-                    express.setUser_id(userId);
-                    express.setUser_img(bytes);
-                    express.save();
+                String sqlStr = "select * from express where user_id=?";
+                Cursor cursor = db.rawQuery(sqlStr, new String[]{userId + ""});
+                if (cursor.getCount() > 0) {
+                    ContentValues values = new ContentValues();
+                    values.put("user_img", bytes);
+                    db.update("express", values, "user_id = ?", new String[]{userId + ""});
+                    Log.i("---------------", userId + "更新头像");
+                } else {
+                    ContentValues values = new ContentValues();
+                    values.put("user_id", userId);
+                    values.put("user_img", bytes);
+                    db.insert("express", null, values);
+                    Log.i("------------", userId + "设置头像");
                 }
-//                Cursor cursor = db.rawQuery("select * from express where user_id = ?",new String[]{userId+""});
-//                Log.i("---------------", String.valueOf(cursor.moveToNext()));
-//                if (cursor.moveToFirst()){
-//                    Log.i("---------------", userId + "更新头像");
-//                    ContentValues values = new ContentValues();
-//                    values.put("user_img", bytes);
-//                    db.update("express", values, "user_id = ?",new String[]{userId+""});
-//                }else {
-//                    Log.i("------------", userId + "设置头像");
-//                    ContentValues values = new ContentValues();
-//                    values.put("user_id", userId);
-//                    values.put("user_img", bytes);
-//                    db.insert("express", null, values);
-//                }
-//                db.close();
+                cursor.close();
+                db.close();
             }
         }).start();
     }

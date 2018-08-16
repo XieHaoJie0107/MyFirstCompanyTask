@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/task"
-        android:text="普通任务"
+        android:text="巡检任务"
         android:gravity="center"
         android:textSize="15sp"/>
 

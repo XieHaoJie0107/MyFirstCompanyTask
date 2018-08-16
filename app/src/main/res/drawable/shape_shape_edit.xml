@@ -6,7 +6,7 @@
         android:width="200dp"
         android:height="35dp" />
     <stroke
-        android:color="#000000"
+        android:color="@color/view"
         android:width="1dp"/>
 
 </shape>
