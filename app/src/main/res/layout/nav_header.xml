@@ -17,7 +17,8 @@
         android:id="@+id/name_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:maxLines="2"/>
 
     <TextView
         android:id="@+id/class_text"
