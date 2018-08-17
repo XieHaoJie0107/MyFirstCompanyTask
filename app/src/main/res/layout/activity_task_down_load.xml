@@ -88,11 +88,14 @@
             android:textSize="18sp" />
 
         <TextView
+            android:gravity="center_vertical"
+            android:id="@+id/tv_start"
             android:layout_width="match_parent"
             android:layout_height="28dp"
             android:layout_marginStart="30dp"
             android:layout_toRightOf="@id/text_start"
-            android:background="@drawable/shape_shape_edit" />
+            android:background="@drawable/shape_shape_edit"
+            android:paddingStart="10dp"/>
 
         <ImageButton
             android:id="@+id/btn_time_start"
@@ -120,6 +123,9 @@
             android:textSize="18sp" />
 
         <TextView
+            android:gravity="center_vertical"
+            android:id="@+id/tv_end"
+            android:paddingStart="10dp"
             android:layout_width="match_parent"
             android:layout_height="28dp"
             android:layout_marginStart="30dp"
@@ -136,13 +142,23 @@
             android:background="@drawable/bg_round_white"
             android:src="@mipmap/date" />
     </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_marquee"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:text="你还没有同步任务数据,请同步"/>
 
     <Button
         android:id="@+id/btn_download"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="110dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/button_selector"
         android:text="开始同步" />
 

@@ -19,7 +19,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     private LinearLayout mAbout, mFinishAll, mClearCash;
     private ImageButton mBack;
     private TextView mCacheSize;
-    private static final String TAG = "-----------------------";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +88,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 alertDialog.show();
                 delCache(getCacheDir());
                 alertDialog.dismiss();
-                Toast.makeText(this,"清除缓存成功",Toast.LENGTH_SHORT);
+                Toast.makeText(SettingActivity.this,"清除缓存成功",Toast.LENGTH_SHORT).show();
                 mCacheSize.setText("0.00KB");
                 break;
         }
