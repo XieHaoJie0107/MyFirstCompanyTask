@@ -25,7 +25,6 @@
     <color name="view">#BBBBBB</color>
     <color name="button_bg">#BBBBBB</color>
     <color name="color_text_bold">#BBBBBB</color>
-
-
+    <color name="color_red">#FF0000</color>
 
 </resources>

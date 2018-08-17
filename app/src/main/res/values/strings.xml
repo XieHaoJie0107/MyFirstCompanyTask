@@ -15,5 +15,6 @@
     <string name="task_ansy">同步任务</string>
     <string name="about">关于我们</string>
     <string name="title_about_us">关于我们</string>
+    <string name="clear_cache">清除缓存</string>
 
 </resources>
