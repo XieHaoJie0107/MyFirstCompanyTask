@@ -74,16 +74,18 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                     mTextStart.setText(dateBegin);
                     mTextEnd.setText(dateEnd);
                 } else if ("本月".equals(mTimeStartToEnd.getText())) {
-                    long l = System.currentTimeMillis();
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     Calendar calendar = Calendar.getInstance();
-                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                    int actualMaximum = calendar.getActualMaximum(Calendar.DATE);
-                    long beginTime = l - (dayOfMonth - 1) * (24 * 60 * 60 * 1000);
-                    long endTime = l + (actualMaximum - dayOfMonth) * (24 * 60 * 60 * 1000);
-                    String dateBegin = format.format(beginTime);
-                    String dateEnd = format.format(endTime);
+                    calendar.set(Calendar.DAY_OF_MONTH,1);
+                    Date time = calendar.getTime();
+                    String dateBegin = format.format(time);
                     mTextStart.setText(dateBegin);
+
+                    Calendar calendar2 = Calendar.getInstance();
+                    int actualMaximum = calendar2.getActualMaximum(Calendar.DATE);
+                    calendar2.set(Calendar.DAY_OF_MONTH,actualMaximum);
+                    Date time2 = calendar2.getTime();
+                    String dateEnd = format.format(time2);
                     mTextEnd.setText(dateEnd);
                 } else if ("自定义".equals(mTimeStartToEnd.getText())) {
                 }
@@ -150,7 +152,9 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         String end = sb.toString();
                         mTextEnd.setText(end);
                         boolean isAllowShowEndTime = compareToBegin(start, end);
-                        Log.i(TAG, start + "   " + end);
+                        if (!isAllowShowEndTime){
+                            Toast.makeText(TaskDownLoadActivity.this,"结束日期不能在开始日期之前",Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
                 dialog2.show();
@@ -166,6 +170,10 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                 mBtnSure.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        String startTime = mTextStart.getText().toString();
+                        String endTime = mTextEnd.getText().toString();
+                        Boolean isTimeFirst = compareToBegin(startTime,endTime);
+
                         alertDialog.dismiss();
                     }
                 });
@@ -180,12 +188,12 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
             Date endDate = format.parse(end);
             int status = startDate.compareTo(endDate);
             if (status > 0) {
-                Toast.makeText(this,"结束日期不能在开始日期之前",Toast.LENGTH_SHORT).show();
                 mTextEnd.setText("");
+                return false;
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 }
