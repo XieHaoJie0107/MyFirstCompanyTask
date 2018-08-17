@@ -45,7 +45,8 @@
         </provider>
 
         <activity android:name=".TaskList.Task2Activity" />
-        <activity android:name=".Main.TaskDownLoadActivity"></activity>
+        <activity android:name=".Main.TaskDownLoadActivity" />
+        <activity android:name=".Settings.SettingAboutUsActivity"></activity>
     </application>
 
 </manifest>
