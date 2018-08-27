@@ -30,7 +30,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         final Task task = list.get(i);
         viewHolder.text1.setText(task.getText1());
         viewHolder.text2.setText(task.getText2());
@@ -56,6 +56,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), Task2Activity.class);
+                intent.putExtra("taskName",list.get(i).getTitle());
                 view.getContext().startActivity(intent);
             }
         });

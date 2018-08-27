@@ -1,6 +1,7 @@
 package xhj.zime.com.mymaptest.TaskList;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -40,6 +42,13 @@ public class Task2Activity extends AppCompatActivity {
         setContentView(R.layout.activity_task2);
         initView();
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(Task2Activity.this,TaskDetailActivity.class);
+                startActivity(intent);
+            }
+        });
         initData();
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +104,8 @@ public class Task2Activity extends AppCompatActivity {
              String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
              list.add(task_point_name);
         }
-        taskName.setText("建华大街隧道巡检");
+        String taskName = getIntent().getStringExtra("taskName");
+        this.taskName.setText(taskName);
         adapter.notifyDataSetChanged();
         db.close();
     }

@@ -19,6 +19,15 @@ public class TaskPointBeansBean {
     private String task_point_location;
     private String task_point_name;
     private int task_type;
+    private String attr_json;
+
+    public String getAttr_json() {
+        return attr_json;
+    }
+
+    public void setAttr_json(String attr_json) {
+        this.attr_json = attr_json;
+    }
 
     public Object getHasflaw() {
         return hasflaw;

@@ -270,6 +270,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         values.put("task_point_location", x.getTask_point_location());
                         values.put("task_point_name", x.getTask_point_name());
                         values.put("task_type", x.getTask_type());
+                        values.put("attr_json",x.getAttr_json());
                         db.insert("taskpoint", null, values);
                     }
                     db.close();

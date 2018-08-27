@@ -13,10 +13,25 @@ import org.json.JSONObject;
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
 import xhj.zime.com.mymaptest.bean.BaseDataBean;
 import xhj.zime.com.mymaptest.bean.DataBean;
+import xhj.zime.com.mymaptest.bean.ObjectAttributeBean;
 import xhj.zime.com.mymaptest.bean.TaskBeansBean;
 import xhj.zime.com.mymaptest.bean.UserBean;
 
 public class Utility {
+
+    public static ObjectAttributeBean handleObjectAttrResponse(String response){
+        if (!TextUtils.isEmpty(response)){
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String userString  = jsonObject.toString();
+                Gson gson = new Gson();
+                return gson.fromJson(userString,ObjectAttributeBean.class);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     public static BaseDataBean handleBaseDataResponse(String response){
         if (!TextUtils.isEmpty(response)){
