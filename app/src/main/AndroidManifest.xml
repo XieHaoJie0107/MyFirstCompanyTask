@@ -44,9 +44,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".TaskList.Task2Activity" />
-        <activity android:name=".Main.TaskDownLoadActivity" />
-        <activity android:name=".Settings.SettingAboutUsActivity"></activity>
+        <activity android:name=".TaskList.Task2Activity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Main.TaskDownLoadActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Settings.SettingAboutUsActivity"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>

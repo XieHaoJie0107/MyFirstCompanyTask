@@ -123,7 +123,6 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 @Override
                 public void run() {
                     Glide.with(getActivity()).load(bitmap).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(userImage);
-                    Log.i("---------------", "进来了: 初始化头像");
                 }
             });
 
@@ -155,8 +154,6 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
             case R.id.download:
                 Intent intent1 = new Intent(getContext(), TaskDownLoadActivity.class);
                 getActivity().startActivity(intent1);
-//                String address = HttpUtil.baseUrl + "task/data/download?userid=26&pageSize=10&pageNo=1";
-//                downloadTask(address);
                 break;
             case R.id.upload:
                 break;
@@ -278,109 +275,6 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         return path;
     }
 
-    private void downloadTask(String address) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                openProgressDialog();
-            }
-        });
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getContext(), "任务同步失败!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseText = response.body().string();
-                BaseDataBack baseDataBack = Utility.handleBaseDataBackResponse(responseText);
-                Gson gson = new Gson();
-                int backCode = baseDataBack.getCode();
-                if (backCode > 0) {
-                    SQLiteDatabase db = new SQLdm().openDatabase(getContext());
-                    Object data = baseDataBack.getData();
-                    DataBean dataBean = Utility.handleDataResponse(gson.toJson(data));
-                    List<TaskBeansBean> taskBeans = dataBean.getTaskBeans();
-                    ContentValues values = new ContentValues();
-                    for (TaskBeansBean taskBeansBean : taskBeans) {
-                        String task_crew = taskBeansBean.getTask_crew();
-                        String task_id = taskBeansBean.getTask_id();
-                        String task_leader = taskBeansBean.getTask_leader();
-                        String task_name = taskBeansBean.getTask_name();
-                        String task_plan_tiam = taskBeansBean.getTask_plan_time().split(" ")[0];
-                        String task_type = taskBeansBean.getTask_type();
-                        String task_work_no = taskBeansBean.getTask_work_no();
-                        String team_type = taskBeansBean.getTeam_type();
-                        Date date = new Date();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        String time = dateFormat.format(date);
-                        String real = time.split(" ")[0];
-                        int user_id = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("userId", -1);
-                        values.clear();
-                        values.put("task_crew", task_crew);
-                        values.put("task_id", task_id);
-                        values.put("task_leader", task_leader);
-                        values.put("task_name", task_name);
-                        values.put("task_plan_time", task_plan_tiam);
-                        values.put("task_type", task_type);
-                        values.put("task_work_no", task_work_no);
-                        values.put("team_type", team_type);
-                        values.put("user_id", user_id);
-                        values.put("task_confirm_time", real);
-                        values.put("task_status", TaskStatusString.TASK_STATUS_WEIQIDONG);
-                        db.insert("tasklist", null, values);
-                    }
-                    List<TaskPointBeansBean> taskPointBeans = dataBean.getTaskPointBeans();
-                    for (TaskPointBeansBean x : taskPointBeans) {
-                        values.clear();
-                        values.put("hasflaw", (String) x.getHasflaw());
-                        values.put("object_type_id", x.getTask_id());
-                        values.put("task_id", x.getTask_id());
-                        values.put("task_point_id", x.getTask_point_id());
-                        values.put("task_point_location", x.getTask_point_location());
-                        values.put("task_point_name", x.getTask_point_name());
-                        values.put("task_type", x.getTask_type());
-                        db.insert("taskpoint", null, values);
-                    }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                        }
-                    });
-                    db.close();
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getContext(), "任务同步失败!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void openProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(getContext());
-            progressDialog.setMessage("任务同步中...");
-            progressDialog.show();
-        }
-    }
-
-    private void closeProgressDialog() {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
-    }
 }
 
 

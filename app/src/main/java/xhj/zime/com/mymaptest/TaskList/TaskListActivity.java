@@ -42,8 +42,8 @@ public class TaskListActivity extends BaseActivity {
 
     private void showTaskList() {
         SQLiteDatabase db = new SQLdm().openDatabase(this);
-        int userId = PreferenceManager.getDefaultSharedPreferences(this).getInt("userId",26);
-        Cursor cursor = db.rawQuery("select * from tasklist where user_id=?",new String[]{userId+""});
+        int userId = PreferenceManager.getDefaultSharedPreferences(this).getInt("userId",-1);
+        Cursor cursor = db.rawQuery("select * from tasklist where user_id=? and task_type=?",new String[]{userId+"",401+""});
         if (cursor !=null){
             while (cursor.moveToNext()){
                 String task_status = cursor.getInt(cursor.getColumnIndex("task_status"))+"";
