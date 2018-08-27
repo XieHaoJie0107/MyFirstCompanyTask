@@ -59,6 +59,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
     private List<String> mList = new ArrayList<>();
     private SpinnerUtils mSpinnerUtils;
     private static final String TAG = "----------------------";
+    private int mTaskDownLoadCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +195,13 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                 Log.i(TAG, userId+"");
                 String address = HttpUtil.baseUrl + "task/data/download?userid="+userId+"&pageSize=10&pageNo=1"+"&startTime=20161011&endTime=20191011";
                 downloadTask(address,startTime,endTime);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                TextView taskDownLoadCount = view1.findViewById(R.id.text_download_count);
+                taskDownLoadCount.setText("您已经同步了"+mTaskDownLoadCount+"条任务数据");
 
                 Button mBtnSure = view1.findViewById(R.id.btn_sure);
                 mBtnSure.setOnClickListener(new View.OnClickListener() {
@@ -258,6 +266,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                             values.put("task_confirm_time", real);
                             values.put("task_status", TaskStatusString.TASK_STATUS_WEIQIDONG);
                             db.insert("tasklist", null, values);
+                            mTaskDownLoadCount++;
                         }
                     }
                     List<TaskPointBeansBean> taskPointBeans = dataBean.getTaskPointBeans();

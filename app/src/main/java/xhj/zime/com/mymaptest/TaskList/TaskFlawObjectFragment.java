@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,9 +35,8 @@ import xhj.zime.com.mymaptest.R;
 
 import static android.app.Activity.RESULT_OK;
 
-public class TaskFlawObjectFragment extends Fragment {
-    ImageView photo1, photo2;
-    Button add_photo;
+public class TaskFlawObjectFragment extends Fragment implements View.OnClickListener{
+    ImageView photo1, photo2,photo3;
     private static final int TAKE_PHOTO = 1;//拍照操作
 
     //拍照所得到的图像的保存路径
@@ -44,6 +45,8 @@ public class TaskFlawObjectFragment extends Fragment {
     //当前用户拍照或者从相册选择的照片的文件名
     private String fileName;
 
+    private int mCurrentImg;
+
 
     @Nullable
     @Override
@@ -51,19 +54,16 @@ public class TaskFlawObjectFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_flaw_object, container, false);
         photo1 = (ImageView) view.findViewById(R.id.photo1);
         photo2 = (ImageView) view.findViewById(R.id.photo2);
-        add_photo = (Button) view.findViewById(R.id.add_photo);
+        photo3 = (ImageView) view.findViewById(R.id.photo3);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        add_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                takePohto();
-            }
-        });
+        photo1.setOnClickListener(this);
+        photo2.setOnClickListener(this);
+        photo3.setOnClickListener(this);
     }
 
     public void takePohto() {
@@ -99,7 +99,13 @@ public class TaskFlawObjectFragment extends Fragment {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContext().
                                 getContentResolver().openInputStream(imageUri));
-                        photo1.setImageBitmap(bitmap);
+                        if (mCurrentImg == 1){
+                            Glide.with(getActivity()).load(bitmap).into(photo1);
+                        }else if (mCurrentImg == 2){
+                            Glide.with(getActivity()).load(bitmap).into(photo2);
+                        }else if (mCurrentImg == 3){
+                            Glide.with(getActivity()).load(bitmap).into(photo3);
+                        }
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -110,6 +116,23 @@ public class TaskFlawObjectFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.photo1:
+                takePohto();
+                mCurrentImg = 1;
+                break;
+            case R.id.photo2:
+                takePohto();
+                mCurrentImg = 2;
+                break;
+            case R.id.photo3:
+                takePohto();
+                mCurrentImg = 3;
+                break;
+        }
+    }
 }
 
 
