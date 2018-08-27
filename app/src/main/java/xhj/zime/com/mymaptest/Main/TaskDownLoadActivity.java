@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +59,6 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
     private SpinnerChooseAdapter mAdapter;
     private List<String> mList = new ArrayList<>();
     private SpinnerUtils mSpinnerUtils;
-    private static final String TAG = "----------------------";
     private int mTaskDownLoadCount = 0;
 
     @Override
@@ -192,7 +192,6 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                 String endTime = mTextEnd.getText().toString();
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(TaskDownLoadActivity.this);
                 int userId = preferences.getInt("userId",-1);
-                Log.i(TAG, userId+"");
                 String address = HttpUtil.baseUrl + "task/data/download?userid="+userId+"&pageSize=10&pageNo=1"+"&startTime=20161011&endTime=20191011";
                 downloadTask(address,startTime,endTime);
                 try {
@@ -202,6 +201,8 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                 }
                 TextView taskDownLoadCount = view1.findViewById(R.id.text_download_count);
                 taskDownLoadCount.setText("您已经同步了"+mTaskDownLoadCount+"条任务数据");
+                ProgressBar progressBar = view1.findViewById(R.id.progress);
+                progressBar.setVisibility(View.GONE);
 
                 Button mBtnSure = view1.findViewById(R.id.btn_sure);
                 mBtnSure.setOnClickListener(new View.OnClickListener() {

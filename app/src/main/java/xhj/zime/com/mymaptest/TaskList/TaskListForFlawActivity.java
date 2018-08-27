@@ -57,8 +57,7 @@ public class TaskListForFlawActivity extends BaseActivity {
                 String team_type = cursor.getString(cursor.getColumnIndex("team_type"));
                 String task_plan_time = cursor.getString(cursor.getColumnIndex("task_plan_time"));
                 String task_end_time = cursor.getString(cursor.getColumnIndex("task_end_time"));
-                String task_status = cursor.getString(cursor.getColumnIndex("task_status"));
-                Log.i("----------------", task_status);
+                int task_status = cursor.getInt(cursor.getColumnIndex("task_status"));
                 Task task = new Task(task_status,taskName,leader,team_type,task_plan_time,task_end_time,"");
                 list.add(task);
             }

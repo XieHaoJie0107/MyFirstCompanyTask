@@ -26,6 +26,7 @@ import java.util.Map;
 
 import xhj.zime.com.mymaptest.Main.MainActivity;
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 
 public class Task2Activity extends AppCompatActivity {
@@ -35,6 +36,8 @@ public class Task2Activity extends AppCompatActivity {
     private Button qidong, zanting, wancheng;
     private List<String> list = new ArrayList<>();
     private ArrayAdapter adapter;
+    private String taskNameText;
+    private static final String TAG = "-------------------";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +59,35 @@ public class Task2Activity extends AppCompatActivity {
                 finish();
             }
         });
+
+        SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
+        Cursor cursor = db.rawQuery("select task_status from tasklist where task_name = ?", new String[]{taskNameText});
+        int task_status = 0;
+        if (cursor.moveToNext()){
+            task_status = cursor.getInt(cursor.getColumnIndex("task_status"));
+            Log.i(TAG, task_status+"     ");    //3
+        }
+        if (task_status == TaskStatusString.TASK_STATUS_DANGQIAN){
+            qidong.setEnabled(false);
+            zanting.setEnabled(true);
+            wancheng.setEnabled(true);
+        }else if (task_status == TaskStatusString.TASK_STATUS_WANGCHENG){
+            qidong.setEnabled(false);
+            zanting.setEnabled(false);
+            wancheng.setEnabled(false);
+        }else if (task_status == TaskStatusString.TASK_STATUS_ISPAUSE){
+            qidong.setEnabled(true);
+            zanting.setEnabled(false);
+            wancheng.setEnabled(true);
+        }
+        db.close();
         qidong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
-                values.put("task_status", MainActivity.TASK_STATUS_YIQIDONG);
-                db.update("tasklist",values,"task_name = ?",new String[]{"建华大街隧道巡检"});
+                values.put("task_status", TaskStatusString.TASK_STATUS_YIQIDONG);
+                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(false);
                 zanting.setEnabled(true);
@@ -74,8 +99,8 @@ public class Task2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
-                values.put("task_status", MainActivity.TASK_STATUS_WEIQIDONG);
-                db.update("tasklist",values,"task_name = ?",new String[]{"建华大街隧道巡检"});
+                values.put("task_status", TaskStatusString.TASK_STATUS_ISPAUSE);
+                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(true);
                 zanting.setEnabled(false);
@@ -87,8 +112,8 @@ public class Task2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
-                values.put("task_status", MainActivity.TASK_STATUS_WANGCHENG);
-                db.update("tasklist",values,"task_name = ?",new String[]{"建华大街隧道巡检"});
+                values.put("task_status", TaskStatusString.TASK_STATUS_WANGCHENG);
+                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(false);
                 zanting.setEnabled(false);
@@ -104,8 +129,8 @@ public class Task2Activity extends AppCompatActivity {
              String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
              list.add(task_point_name);
         }
-        String taskName = getIntent().getStringExtra("taskName");
-        this.taskName.setText(taskName);
+        taskNameText = getIntent().getStringExtra("taskName");
+        this.taskName.setText(taskNameText);
         adapter.notifyDataSetChanged();
         db.close();
     }

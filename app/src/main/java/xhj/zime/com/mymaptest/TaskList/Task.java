@@ -1,7 +1,7 @@
 package xhj.zime.com.mymaptest.TaskList;
 
 public class Task {
-    private String taskStatus;
+    private int taskStatus;
     private String title;
     private String text1;
     private String text2;
@@ -9,7 +9,7 @@ public class Task {
     private String text4;
     private String text5;
 
-    public Task(String taskStatus,String title,String text1, String text2, String text3, String text4, String text5) {
+    public Task(int taskStatus,String title,String text1, String text2, String text3, String text4, String text5) {
         this.taskStatus = taskStatus;
         this.title = title;
         this.text1 = text1;
@@ -47,11 +47,11 @@ public class Task {
         return title;
     }
 
-    public String getTaskStatus() {
+    public int getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(String taskStatus) {
+    public void setTaskStatus(int taskStatus) {
         this.taskStatus = taskStatus;
     }
 

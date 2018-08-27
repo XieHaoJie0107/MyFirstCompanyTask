@@ -38,18 +38,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         viewHolder.text4.setText(task.getText4());
         viewHolder.title.setText(task.getTitle());
         viewHolder.text5.setText(task.getText5());
-        if ("1".equals(task.getTaskStatus())){
+        if (task.getTaskStatus() == 1){
             viewHolder.taskStatus.setText("当前任务");
-        }else if ("0".equals(task.getTaskStatus())){
+        }else if (task.getTaskStatus() == 0){
             viewHolder.taskStatus.setText("已完成");
-        }else if ("2".equals(task.getTaskStatus())){
+        }else if (task.getTaskStatus() == 2){
             viewHolder.taskStatus.setText("已启动");
-        }else if ("3".equals(task.getTaskStatus())){
+        }else if (task.getTaskStatus() == 3){
             viewHolder.taskStatus.setText("未启动");
-        }else if ("4".equals(task.getTaskStatus())){
+        }else if (task.getTaskStatus() == 4){
             viewHolder.taskStatus.setText("上传失败");
-        }else if ("5".equals(task.getTaskStatus())){
+        }else if (task.getTaskStatus() == 5){
             viewHolder.taskStatus.setText("上传成功");
+        }else if (task.getTaskStatus() == 6){
+            viewHolder.taskStatus.setText("已暂停");
         }
 
         viewHolder.view.setOnClickListener(new View.OnClickListener() {
