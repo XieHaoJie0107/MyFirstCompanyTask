@@ -39,19 +39,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         viewHolder.title.setText(task.getTitle());
         viewHolder.text5.setText(task.getText5());
         if (task.getTaskStatus() == 1){
-            viewHolder.taskStatus.setText("当前任务");
-        }else if (task.getTaskStatus() == 0){
-            viewHolder.taskStatus.setText("已完成");
-        }else if (task.getTaskStatus() == 2){
-            viewHolder.taskStatus.setText("已启动");
-        }else if (task.getTaskStatus() == 3){
-            viewHolder.taskStatus.setText("未启动");
-        }else if (task.getTaskStatus() == 4){
-            viewHolder.taskStatus.setText("上传失败");
-        }else if (task.getTaskStatus() == 5){
-            viewHolder.taskStatus.setText("上传成功");
-        }else if (task.getTaskStatus() == 6){
             viewHolder.taskStatus.setText("已暂停");
+        }else if (task.getTaskStatus() == 0){
+            viewHolder.taskStatus.setText("当前任务");
+        }else if (task.getTaskStatus() == 2){
+            viewHolder.taskStatus.setText("未启动");
+        }else if (task.getTaskStatus() == 3){
+            viewHolder.taskStatus.setText("已完成");
+        }else if (task.getTaskStatus() == 4){
+            viewHolder.taskStatus.setText("已上传");
+        }else if (task.getTaskStatus() == 5){
+            viewHolder.taskStatus.setText("上传失败");
         }
 
         viewHolder.view.setOnClickListener(new View.OnClickListener() {

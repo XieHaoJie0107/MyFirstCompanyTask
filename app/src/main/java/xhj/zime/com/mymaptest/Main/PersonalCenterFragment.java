@@ -136,9 +136,10 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
         switch (view.getId()) {
             case R.id.list:
                 View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.alert_dialog, null);
-                AlertDialog dialog = new AlertDialog.Builder(getContext())
+                final AlertDialog dialog = new AlertDialog.Builder(getContext())
                         .setView(view1)
                         .create();
+                dialog.show();
                 TextView task, flaw;
                 task = (TextView) view1.findViewById(R.id.task);
                 flaw = (TextView) view1.findViewById(R.id.flaw);
@@ -147,9 +148,10 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                     public void onClick(View view) {
                         Intent intent = new Intent(getContext(), TaskListActivity.class);
                         startActivity(intent);
+                        dialog.dismiss();
                     }
                 });
-                dialog.show();
+
                 break;
             case R.id.download:
                 Intent intent1 = new Intent(getContext(), TaskDownLoadActivity.class);
