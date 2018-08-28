@@ -37,7 +37,6 @@ public class Task2Activity extends AppCompatActivity {
     private List<String> list = new ArrayList<>();
     private ArrayAdapter adapter;
     private String taskNameText;
-    private static final String TAG = "-------------------";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,7 @@ public class Task2Activity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(Task2Activity.this,TaskDetailActivity.class);
+                Intent intent = new Intent(Task2Activity.this, TaskDetailActivity.class);
                 startActivity(intent);
             }
         });
@@ -63,30 +62,36 @@ public class Task2Activity extends AppCompatActivity {
         SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
         Cursor cursor = db.rawQuery("select task_status from tasklist where task_name = ?", new String[]{taskNameText});
         int task_status = 0;
-        if (cursor.moveToNext()){
+        if (cursor.moveToNext()) {
             task_status = cursor.getInt(cursor.getColumnIndex("task_status"));
-            Log.i(TAG, task_status+"     ");    //3
         }
-        if (task_status == TaskStatusString.TASK_STATUS_DANGQIAN){
+
+        if (task_status == TaskStatusString.TASK_STATUS_DANGQIAN) {
             qidong.setEnabled(false);
             zanting.setEnabled(true);
             wancheng.setEnabled(true);
-        }else if (task_status == TaskStatusString.TASK_STATUS_WANGCHENG){
+        } else if (task_status == TaskStatusString.TASK_STATUS_WANGCHENG) {
             qidong.setEnabled(false);
             zanting.setEnabled(false);
             wancheng.setEnabled(false);
-        }else if (task_status == TaskStatusString.TASK_STATUS_ISPAUSE){
+        } else if (task_status == TaskStatusString.TASK_STATUS_ISPAUSE) {
             qidong.setEnabled(true);
             zanting.setEnabled(false);
             wancheng.setEnabled(true);
         }
         db.close();
+        /*
+             启动,先把所有已经启动的任务暂停,再启动某一个
+         */
         qidong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
-                values.put("task_status", TaskStatusString.TASK_STATUS_YIQIDONG);
+                values.put("task_status", TaskStatusString.TASK_STATUS_ISPAUSE);
+                db.update("tasklist", values, "task_status = ?", new String[]{TaskStatusString.TASK_STATUS_DANGQIAN+""});
+                values.clear();
+                values.put("task_status",TaskStatusString.TASK_STATUS_DANGQIAN);
                 db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(false);
@@ -100,7 +105,7 @@ public class Task2Activity extends AppCompatActivity {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
                 values.put("task_status", TaskStatusString.TASK_STATUS_ISPAUSE);
-                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
+                db.update("tasklist", values, "task_name = ?", new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(true);
                 zanting.setEnabled(false);
@@ -113,7 +118,7 @@ public class Task2Activity extends AppCompatActivity {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
                 values.put("task_status", TaskStatusString.TASK_STATUS_WANGCHENG);
-                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
+                db.update("tasklist", values, "task_name = ?", new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(false);
                 zanting.setEnabled(false);
@@ -124,10 +129,10 @@ public class Task2Activity extends AppCompatActivity {
 
     private void initData() {
         SQLiteDatabase db = new SQLdm().openDatabase(this);
-        Cursor cursor = db.rawQuery("select * from taskpoint where task_type = ?",new String[]{"401"});
-        while (cursor.moveToNext()){
-             String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
-             list.add(task_point_name);
+        Cursor cursor = db.rawQuery("select * from taskpoint where task_type = ?", new String[]{"401"});
+        while (cursor.moveToNext()) {
+            String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
+            list.add(task_point_name);
         }
         taskNameText = getIntent().getStringExtra("taskName");
         this.taskName.setText(taskNameText);
@@ -141,7 +146,7 @@ public class Task2Activity extends AppCompatActivity {
         qidong = (Button) findViewById(R.id.qidong);
         zanting = (Button) findViewById(R.id.zanting);
         wancheng = (Button) findViewById(R.id.wancheng);
-        adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         back = (ImageButton) findViewById(R.id.back);
     }
 }
