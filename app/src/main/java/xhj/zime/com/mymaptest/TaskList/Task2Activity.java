@@ -1,6 +1,7 @@
 package xhj.zime.com.mymaptest.TaskList;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,8 +38,10 @@ public class Task2Activity extends AppCompatActivity {
     private TextView taskName;
     private Button qidong, zanting, wancheng;
     private List<String> list = new ArrayList<>();
-    private ArrayAdapter adapter;
+    private Task2Adapter adapter;
     private String taskNameText;
+    private int[] mCurrentItem = new int[50];
+    private int index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,9 @@ public class Task2Activity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(Task2Activity.this, TaskDetailActivity.class);
                 startActivity(intent);
+                mCurrentItem[index] = i;
+                index++;
+                adapter.notifyDataSetChanged();
             }
         });
         initData();
@@ -89,10 +97,10 @@ public class Task2Activity extends AppCompatActivity {
                 SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
                 ContentValues values = new ContentValues();
                 values.put("task_status", TaskStatusString.TASK_STATUS_ISPAUSE);
-                db.update("tasklist", values, "task_status = ?", new String[]{TaskStatusString.TASK_STATUS_DANGQIAN+""});
+                db.update("tasklist", values, "task_status = ?", new String[]{TaskStatusString.TASK_STATUS_DANGQIAN + ""});
                 values.clear();
-                values.put("task_status",TaskStatusString.TASK_STATUS_DANGQIAN);
-                db.update("tasklist",values,"task_name = ?",new String[]{taskNameText});
+                values.put("task_status", TaskStatusString.TASK_STATUS_DANGQIAN);
+                db.update("tasklist", values, "task_name = ?", new String[]{taskNameText});
                 db.close();
                 qidong.setEnabled(false);
                 zanting.setEnabled(true);
@@ -146,7 +154,48 @@ public class Task2Activity extends AppCompatActivity {
         qidong = (Button) findViewById(R.id.qidong);
         zanting = (Button) findViewById(R.id.zanting);
         wancheng = (Button) findViewById(R.id.wancheng);
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        adapter = new Task2Adapter(this, list);
         back = (ImageButton) findViewById(R.id.back);
+        for (int i = 0; i < 50; i++) {
+            mCurrentItem[i] = -1;
+        }
+    }
+
+    class Task2Adapter extends BaseAdapter {
+        private Context mContext;
+        private List<String> mList = new ArrayList<>();
+
+        public Task2Adapter(Context context, List<String> list) {
+            mContext = context;
+            mList = list;
+        }
+
+        @Override
+        public int getCount() {
+            return mList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return mList.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            View itemView = View.inflate(mContext, R.layout.item_task_detail, null);
+            TextView textView = (TextView) itemView.findViewById(R.id.task_detail_text);
+            textView.setText(mList.get(i));
+            for (int j = 0; j < 50; j++) {
+                if (i == mCurrentItem[j]) {
+                    itemView.setBackgroundResource(R.color.gray);
+                }
+            }
+            return itemView;
+        }
     }
 }
