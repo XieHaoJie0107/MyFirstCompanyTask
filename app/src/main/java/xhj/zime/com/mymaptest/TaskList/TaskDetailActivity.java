@@ -1,8 +1,10 @@
 package xhj.zime.com.mymaptest.TaskList;
 
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +41,9 @@ public class TaskDetailActivity extends AppCompatActivity {
         final Button flawLuru = (Button) findViewById(R.id.flaw_luru);
         initView();
         SQLiteDatabase db = new SQLdm().openDatabase(this);
-        Cursor cursor = db.rawQuery("select * from taskpoint where task_id = ?", new String[]{"1011"});
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int userId = preferences.getInt("userId",-1);
+        Cursor cursor = db.rawQuery("select * from taskpoint where user_id = ?", new String[]{userId+""});
         ObjectAttributeBean objectAttributeBean;
         if (cursor.moveToNext()) {
             String attr_json = cursor.getString(cursor.getColumnIndex("attr_json"));
@@ -65,6 +69,7 @@ public class TaskDetailActivity extends AppCompatActivity {
             values.put("att_info5",attributeCompletionTime);
             values.put("att_info6",attributeUseTime);
             values.put("att_info7",attributeDescription);
+            values.put("user_id",userId);
             db.insert("objectattribute",null,values);
             mtext1.setText(attributeType);
             mtext2.setText(attributeNo);

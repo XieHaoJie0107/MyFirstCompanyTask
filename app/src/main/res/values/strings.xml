@@ -16,5 +16,6 @@
     <string name="about">关于我们</string>
     <string name="title_about_us">关于我们</string>
     <string name="clear_cache">清除缓存</string>
+    <string name="task_list_xiaoque">消缺任务</string>
 
 </resources>

@@ -54,12 +54,38 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:background="@drawable/shape_shape_edit"
         android:gravity="start"
         android:padding="5dp"
         android:textSize="15sp"
         android:hint="隧道内有轻微积水,隧道壁有轻微渗水情况"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:id="@+id/photo1"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:src="@mipmap/default_image" />
+
+        <ImageView
+            android:id="@+id/photo2"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:src="@mipmap/default_image" />
+
+        <ImageView
+            android:id="@+id/photo3"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:src="@mipmap/default_image" />
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -27,7 +27,6 @@ public class TaskListActivity extends BaseActivity {
     private TaskAdapter adapter;
     private LinearLayoutManager manager;
     public SwipeRefreshLayout refresh;
-    private static final String TAG = "-----------";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

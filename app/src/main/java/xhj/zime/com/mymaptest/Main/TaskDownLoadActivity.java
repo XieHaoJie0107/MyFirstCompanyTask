@@ -239,6 +239,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                     DataBean dataBean = Utility.handleDataResponse(gson.toJson(data));
                     List<TaskBeansBean> taskBeans = dataBean.getTaskBeans();
                     ContentValues values = new ContentValues();
+                    int user_id = PreferenceManager.getDefaultSharedPreferences(TaskDownLoadActivity.this).getInt("userId", -1);
                     for (TaskBeansBean taskBeansBean : taskBeans) {
                         String task_crew = taskBeansBean.getTask_crew();
                         String task_id = taskBeansBean.getTask_id();
@@ -252,7 +253,6 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                         String time = dateFormat.format(date);
                         String real = time.split(" ")[0];
-                        int user_id = PreferenceManager.getDefaultSharedPreferences(TaskDownLoadActivity.this).getInt("userId", -1);
                         if (compareToBegin(startTime,task_plan_tiam) && compareToBegin(task_plan_tiam,endTime)){
                             values.clear();
                             values.put("task_crew", task_crew);
@@ -281,6 +281,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         values.put("task_point_name", x.getTask_point_name());
                         values.put("task_type", x.getTask_type());
                         values.put("attr_json",x.getAttr_json());
+                        values.put("user_id",user_id);
                         db.insert("taskpoint", null, values);
                     }
                     db.close();

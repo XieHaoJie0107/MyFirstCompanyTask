@@ -48,6 +48,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".Main.TaskDownLoadActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".TaskList.TaskListFlawActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".Settings.SettingAboutUsActivity"
             android:screenOrientation="portrait" ></activity>
     </application>

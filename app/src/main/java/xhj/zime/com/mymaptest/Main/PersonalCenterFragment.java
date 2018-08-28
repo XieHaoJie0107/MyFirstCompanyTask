@@ -51,6 +51,7 @@ import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 import xhj.zime.com.mymaptest.TaskList.TaskListActivity;
+import xhj.zime.com.mymaptest.TaskList.TaskListFlawActivity;
 import xhj.zime.com.mymaptest.Util.HttpUtil;
 import xhj.zime.com.mymaptest.Util.Utility;
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
@@ -151,7 +152,14 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                         dialog.dismiss();
                     }
                 });
-
+                flaw.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext(), TaskListFlawActivity.class);
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });
                 break;
             case R.id.download:
                 Intent intent1 = new Intent(getContext(), TaskDownLoadActivity.class);
