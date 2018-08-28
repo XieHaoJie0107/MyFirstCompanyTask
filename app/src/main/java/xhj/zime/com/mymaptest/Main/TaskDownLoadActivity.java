@@ -37,6 +37,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
 import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 import xhj.zime.com.mymaptest.TaskList.BaseSpinnerAdapter;
@@ -282,6 +283,7 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         values.put("task_type", x.getTask_type());
                         values.put("attr_json",x.getAttr_json());
                         values.put("user_id",user_id);
+                        values.put("is_record", TaskPointStatusString.TASK_POINT_NOTREADED);
                         db.insert("taskpoint", null, values);
                     }
                     db.close();

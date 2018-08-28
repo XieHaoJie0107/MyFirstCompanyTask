@@ -40,7 +40,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/setting_img_btn"
+            android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

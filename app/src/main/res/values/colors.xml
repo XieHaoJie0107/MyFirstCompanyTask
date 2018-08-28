@@ -26,5 +26,6 @@
     <color name="button_bg">#BBBBBB</color>
     <color name="color_text_bold">#BBBBBB</color>
     <color name="color_red">#FF0000</color>
+    <color name="color_low_gray">#F2F2F2</color>
 
 </resources>

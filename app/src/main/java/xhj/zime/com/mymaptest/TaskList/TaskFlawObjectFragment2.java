@@ -1,6 +1,8 @@
 package xhj.zime.com.mymaptest.TaskList;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -28,10 +30,13 @@ import java.util.Date;
 import java.util.List;
 
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
+import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 
 import static android.app.Activity.RESULT_OK;
 
 public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdapter.OnItemClickListener, View.OnClickListener {
+    private TextView mSave;
     SpinnerChooseAdapter adapter1, adapter2;
     List<String> list1 = new ArrayList<>();
     List<String> list2 = new ArrayList<>();
@@ -59,6 +64,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
         photo1 = (ImageView) view.findViewById(R.id.photo1);
         photo2 = (ImageView) view.findViewById(R.id.photo2);
         photo3 = (ImageView) view.findViewById(R.id.photo3);
+        mSave = (TextView) getActivity().findViewById(R.id.save);
         return view;
     }
 
@@ -74,6 +80,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
         photo1.setOnClickListener(this);
         photo2.setOnClickListener(this);
         photo3.setOnClickListener(this);
+        mSave.setOnClickListener(this);
     }
 
     private void initData() {
@@ -88,12 +95,14 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
 
     @Override
     public void onItemClick(View view, int position) {
-        if (list1.contains(list1.get(position))) {
-            Toast.makeText(getActivity(), "点击" + list1.get(position), Toast.LENGTH_SHORT).show();
-            mTextView1.setText(list1.get(position));
-        } else if (list2.contains(list2.get(position))) {
-            Toast.makeText(getActivity(), "点击" + list2.get(position), Toast.LENGTH_SHORT).show();
-            mTextView2.setText(list2.get(position));
+        TextView textView = (TextView)view;
+        String text = (String) textView.getText();
+        if (list1.contains(text)) {
+            Toast.makeText(getActivity(), "点击" + text, Toast.LENGTH_SHORT).show();
+            mTextView1.setText(text);
+        } else if (list2.contains(text)) {
+            Toast.makeText(getActivity(), "点击" + text, Toast.LENGTH_SHORT).show();
+            mTextView2.setText(text);
         }
 
         if (mSpinnerUtils1 != null) {
@@ -174,6 +183,14 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
             case R.id.photo3:
                 takePohto();
                 mCurrentImg = 3;
+                break;
+            case R.id.save:
+                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+                ContentValues values = new ContentValues();
+                values.put("is_record", TaskPointStatusString.TASK_POINT_ISSAVED);
+                db.update("taskpoint",values,"",new String[]{});
+                db.close();
+                Toast.makeText(getContext(),"111111",Toast.LENGTH_SHORT).show();
                 break;
         }
     }

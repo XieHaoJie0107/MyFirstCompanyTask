@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import xhj.zime.com.mymaptest.Main.MainActivity;
+import xhj.zime.com.mymaptest.Model.TaskPoint;
 import xhj.zime.com.mymaptest.R;
+import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
 import xhj.zime.com.mymaptest.SUser.TaskStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
 
@@ -37,11 +39,9 @@ public class Task2Activity extends AppCompatActivity {
     private ListView listView;
     private TextView taskName;
     private Button qidong, zanting, wancheng;
-    private List<String> list = new ArrayList<>();
+    private List<TaskPoint> list = new ArrayList<>();
     private Task2Adapter adapter;
     private String taskNameText;
-    private int[] mCurrentItem = new int[50];
-    private int index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,16 @@ public class Task2Activity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(Task2Activity.this, TaskDetailActivity.class);
                 startActivity(intent);
-                mCurrentItem[index] = i;
-                index++;
                 adapter.notifyDataSetChanged();
+                TaskPoint taskPoint = list.get(i);
+                String taskPointName = taskPoint.getTaskPointName();
+
+                //点击之后改变数据库中的状态
+                SQLiteDatabase db = new SQLdm().openDatabase(Task2Activity.this);
+                ContentValues values = new ContentValues();
+                values.put("is_record", TaskPointStatusString.TASK_POINT_ISREADED);
+                db.update("taskpoint", values, "task_point_name = ?", new String[]{taskPointName});
+                db.close();
             }
         });
         initData();
@@ -136,11 +143,14 @@ public class Task2Activity extends AppCompatActivity {
     }
 
     private void initData() {
+        list.clear();
         SQLiteDatabase db = new SQLdm().openDatabase(this);
-        Cursor cursor = db.rawQuery("select * from taskpoint where task_type = ?", new String[]{"401"});
+        Cursor cursor = db.rawQuery("select * from taskpoint where task_type = ? order by is_record", new String[]{"401"});
         while (cursor.moveToNext()) {
             String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
-            list.add(task_point_name);
+            int status = cursor.getInt(cursor.getColumnIndex("is_record"));
+            TaskPoint taskPoint = new TaskPoint(task_point_name,status);
+            list.add(taskPoint);
         }
         taskNameText = getIntent().getStringExtra("taskName");
         this.taskName.setText(taskNameText);
@@ -154,18 +164,21 @@ public class Task2Activity extends AppCompatActivity {
         qidong = (Button) findViewById(R.id.qidong);
         zanting = (Button) findViewById(R.id.zanting);
         wancheng = (Button) findViewById(R.id.wancheng);
-        adapter = new Task2Adapter(this, list);
+        adapter = new Task2Adapter(this,list);
         back = (ImageButton) findViewById(R.id.back);
-        for (int i = 0; i < 50; i++) {
-            mCurrentItem[i] = -1;
-        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initData();
     }
 
     class Task2Adapter extends BaseAdapter {
         private Context mContext;
-        private List<String> mList = new ArrayList<>();
+        private List<TaskPoint> mList = new ArrayList<>();
 
-        public Task2Adapter(Context context, List<String> list) {
+        public Task2Adapter(Context context, List<TaskPoint> list) {
             mContext = context;
             mList = list;
         }
@@ -189,11 +202,11 @@ public class Task2Activity extends AppCompatActivity {
         public View getView(int i, View view, ViewGroup viewGroup) {
             View itemView = View.inflate(mContext, R.layout.item_task_detail, null);
             TextView textView = (TextView) itemView.findViewById(R.id.task_detail_text);
-            textView.setText(mList.get(i));
-            for (int j = 0; j < 50; j++) {
-                if (i == mCurrentItem[j]) {
-                    itemView.setBackgroundResource(R.color.gray);
-                }
+            textView.setText(mList.get(i).getTaskPointName());
+            if (TaskPointStatusString.TASK_POINT_ISREADED == mList.get(i).getRecordStatus()){
+                itemView.setBackgroundResource(R.color.color_low_gray);
+            }else if (TaskPointStatusString.TASK_POINT_ISSAVED == mList.get(i).getRecordStatus()){
+                itemView.setBackgroundResource(R.color.gray);
             }
             return itemView;
         }

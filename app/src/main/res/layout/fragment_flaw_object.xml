@@ -20,18 +20,20 @@
             android:textStyle="bold" />
 
         <EditText
-            android:textSize="15sp"
-            android:layout_toRightOf="@+id/text_flaw_jilu"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="20dp"
+            android:enabled="false"
+            android:id="@+id/flaw_jilu"
             android:layout_width="0dp"
             android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/text_flaw_jilu"
             android:layout_weight="1"
-            android:gravity="top"
-            android:padding="5dp"
-            android:hint="隧道内有轻微积水"
             android:background="@drawable/shape_shape_edit"
-            android:maxLines="3" />
+            android:gravity="top"
+            android:text="隧道内有轻微积水"
+            android:maxLines="3"
+            android:padding="5dp"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <LinearLayout
@@ -49,15 +51,17 @@
             android:textStyle="bold" />
 
         <EditText
-            android:textSize="15sp"
-            android:padding="5dp"
-            android:layout_marginStart="20dp"
+            android:enabled="false"
+            android:id="@+id/flaw_level"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:layout_weight="1"
             android:background="@drawable/shape_shape_edit"
-            android:hint="一般"
-            android:maxLines="3" />
+            android:text="一般"
+            android:maxLines="3"
+            android:padding="5dp"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,24 +79,26 @@
             android:textStyle="bold" />
 
         <EditText
-            android:padding="5dp"
-            android:layout_marginStart="20dp"
-            android:textSize="15sp"
+            android:enabled="false"
+            android:id="@+id/flaw_jilu_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:layout_weight="1"
             android:background="@drawable/shape_shape_edit"
-            android:hint="2017/11/11 14:26:55"
-            android:maxLines="3" />
+            android:text="2017/11/11 14:26:55"
+            android:maxLines="3"
+            android:padding="5dp"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="现场图片"
-        android:textStyle="bold"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="15dp"/>
+        android:text="现场图片"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
