@@ -58,20 +58,19 @@ public class TaskFlawObjectFragment extends Fragment{
                 Glide.with(getActivity()).load(HttpUtil.baseUrl+filePath).into(photo2);
                 current++;
             }else {
-//                if (cursor.getInt(cursor.getColumnIndex("file_no")) == 0 ){
-//                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
-//                    String[] split = uri.split(",");
-//                    for (String a: split){
-//                        if (current == 1){
-//                            Glide.with(getActivity()).load(a).into(photo1);
-//                        }else if (current == 2){
-//                            Glide.with(getActivity()).load(a).into(photo2);
-//                        }else if (current == 3){
-//                            Glide.with(getActivity()).load(a).into(photo3);
-//                        }
-//                        current++;
-//                    }
-//                }
+                if (cursor.getInt(cursor.getColumnIndex("file_no")) == 0 && current == 1){
+                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
+                    Glide.with(getActivity()).load(uri).into(photo1);
+                    current++;
+                }else if (cursor.getInt(cursor.getColumnIndex("file_no")) == 0 && current == 2){
+                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
+                    Glide.with(getActivity()).load(uri).into(photo2);
+                    current++;
+                }else if (cursor.getInt(cursor.getColumnIndex("file_no")) == 0 && current == 3){
+                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
+                    Glide.with(getActivity()).load(uri).into(photo3);
+                    current++;
+                }
             }
         }
         db.close();

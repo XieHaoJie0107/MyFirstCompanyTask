@@ -59,6 +59,8 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
 
     private int mCurrentImg;
 
+    private Uri[] mUris = new Uri[3];
+
 
     @Nullable
     @Override
@@ -182,14 +184,17 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
             case R.id.photo1:
                 takePohto();
                 mCurrentImg = 1;
+                mUris[0] = imageUri;
                 break;
             case R.id.photo2:
                 takePohto();
                 mCurrentImg = 2;
+                mUris[1] = imageUri;
                 break;
             case R.id.photo3:
                 takePohto();
                 mCurrentImg = 3;
+                mUris[2] = imageUri;
                 break;
             case R.id.save:
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -213,10 +218,14 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
                 values.put("flaw_type_name", mTextView2.getText().toString());
                 db.insert("flawlist", null, values);
 
-//                    values.clear();
-//                    values.put("user_id",userId);
-//                    values.put("file_uri",uri);
-//                    db.insert("adjunctlist",null,values);
+                for (Uri a: mUris){
+                    if (a != null){
+                        values.clear();
+                        values.put("user_id",userId);
+                        values.put("file_uri",a.toString());
+                        db.insert("adjunctlist",null,values);
+                    }
+                }
 
                 db.close();
                 getActivity().finish();
