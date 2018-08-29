@@ -60,6 +60,8 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
     private int mCurrentImg;
 
     private Uri[] mUris = new Uri[3];
+    private String mImagePath;
+    private List<String> imgPaths = new ArrayList<>();
 
 
     @Nullable
@@ -143,6 +145,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mImagePath = outputImage.getPath();
         // 将File对象转换为Uri对象，以便拍照后保存
         imageUri = FileProvider.getUriForFile(getActivity(),
                 "xhj.zime.com.mymaptest.fileprovider", outputImage);
@@ -158,6 +161,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
         switch (requestCode) {
             case TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
+                    imgPaths.add(mImagePath);
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContext().
                                 getContentResolver().openInputStream(imageUri));
@@ -217,16 +221,14 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
                 values.put("flaw_level_name", mTextView1.getText().toString());
                 values.put("flaw_type_name", mTextView2.getText().toString());
                 db.insert("flawlist", null, values);
-
-                for (Uri a: mUris){
+                for (String a: imgPaths){
                     if (a != null){
                         values.clear();
                         values.put("user_id",userId);
-                        values.put("file_uri",a.toString());
+                        values.put("file_uri",a);
                         db.insert("adjunctlist",null,values);
                     }
                 }
-
                 db.close();
                 getActivity().finish();
                 Toast.makeText(getContext(), R.string.success, Toast.LENGTH_SHORT).show();

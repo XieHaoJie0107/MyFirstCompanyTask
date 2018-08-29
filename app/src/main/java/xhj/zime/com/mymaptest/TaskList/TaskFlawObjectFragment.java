@@ -18,6 +18,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+
 import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
@@ -35,7 +37,6 @@ public class TaskFlawObjectFragment extends Fragment{
         photo1 = (ImageView) view.findViewById(R.id.photo1);
         photo2 = (ImageView) view.findViewById(R.id.photo2);
         photo3 = (ImageView) view.findViewById(R.id.photo3);
-//        Glide.with(getActivity()).load("content://xhj.zime.com.mymaptest.fileprovider/my_imgs/Android/data/xhj.zime.com.mymaptest/cache/easyasset20180829145018.jpg").into(photo3);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int userId = preferences.getInt("userId",-1);
         SQLiteDatabase db = new SQLdm().openDatabase(getActivity());

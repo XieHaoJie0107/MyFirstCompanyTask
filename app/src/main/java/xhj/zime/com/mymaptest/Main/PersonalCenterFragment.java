@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,7 +64,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class PersonalCenterFragment extends Fragment implements View.OnClickListener {
     private TextView list, download, upload, powerOffLogin, userName, userClassName;
-    private ProgressDialog progressDialog;
     private ImageView userImage;
     private static final String TAG = "-----------------";
 
@@ -166,6 +166,53 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 getActivity().startActivity(intent1);
                 break;
             case R.id.upload:
+                View view2 = LayoutInflater.from(getContext()).inflate(R.layout.alert_dialog_upload,null,false);
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                        .setView(view2)
+                        .setCancelable(false)
+                        .create();
+                alertDialog.show();
+                String[] uris = new String[3];
+                int index = 0;
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                int userId = preferences.getInt("userId", -1);
+                String address = HttpUtil.baseUrl + "picture/upload";
+                SQLiteDatabase db = new SQLdm().openDatabase(getContext());
+                Cursor cursor = db.rawQuery("select file_uri from adjunctlist where user_id = ?", new String[]{userId + ""});
+                while (cursor.moveToNext()) {
+                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
+                    if (uri != null) {
+                        uris[index] = uri;
+                        index++;
+                    }
+                }
+                db.close();
+                File[] files = new File[3];
+                for (int i = 0; i < uris.length; i++) {
+                    if (uris[i] != null){
+                        files[i] = new File(uris[i]);
+                    }
+                }
+                for (int i = 0; i < uris.length; i++) {
+                    if (uris[i] != null){
+                        HttpUtil.sendPostHttpRequest(address, files[i].getPath(), new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.i(TAG, "onFailure: ");
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String responseText = response.body().string();
+                                BaseDataBack baseDataBack = Utility.handleBaseDataBackResponse(responseText);
+                                Object data = baseDataBack.getData();
+                                Log.i(TAG, "onResponse: "+data.toString());
+                            }
+                        });
+                    }
+                }
+                alertDialog.dismiss();
+                Toast.makeText(getContext(),"上传成功!",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.power_off_login:
                 ActivityCollector.finishAll();
