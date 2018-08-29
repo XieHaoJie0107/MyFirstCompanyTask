@@ -1,6 +1,8 @@
 package xhj.zime.com.mymaptest.Model;
 
-public class TaskPoint {
+import java.io.Serializable;
+
+public class TaskPoint implements Serializable{
     private String taskPointName;
     private int recordStatus;
 

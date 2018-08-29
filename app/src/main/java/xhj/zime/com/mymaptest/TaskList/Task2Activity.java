@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,10 @@ public class Task2Activity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(Task2Activity.this, TaskDetailActivity.class);
+                TaskPoint taskPoint = list.get(i);
+                intent.putExtra("taskPoint", taskPoint);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
-                TaskPoint taskPoint = list.get(i);
                 String taskPointName = taskPoint.getTaskPointName();
 
                 //点击之后改变数据库中的状态
@@ -145,11 +147,13 @@ public class Task2Activity extends AppCompatActivity {
     private void initData() {
         list.clear();
         SQLiteDatabase db = new SQLdm().openDatabase(this);
-        Cursor cursor = db.rawQuery("select * from taskpoint where task_type = ? order by is_record", new String[]{"401"});
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int userId = preferences.getInt("userId",-1);
+        Cursor cursor = db.rawQuery("select * from taskpoint where user_id = ? order by is_record", new String[]{userId+""});
         while (cursor.moveToNext()) {
             String task_point_name = cursor.getString(cursor.getColumnIndex("task_point_name"));
             int status = cursor.getInt(cursor.getColumnIndex("is_record"));
-            TaskPoint taskPoint = new TaskPoint(task_point_name,status);
+            TaskPoint taskPoint = new TaskPoint(task_point_name, status);
             list.add(taskPoint);
         }
         taskNameText = getIntent().getStringExtra("taskName");
@@ -164,7 +168,7 @@ public class Task2Activity extends AppCompatActivity {
         qidong = (Button) findViewById(R.id.qidong);
         zanting = (Button) findViewById(R.id.zanting);
         wancheng = (Button) findViewById(R.id.wancheng);
-        adapter = new Task2Adapter(this,list);
+        adapter = new Task2Adapter(this, list);
         back = (ImageButton) findViewById(R.id.back);
     }
 
@@ -203,9 +207,9 @@ public class Task2Activity extends AppCompatActivity {
             View itemView = View.inflate(mContext, R.layout.item_task_detail, null);
             TextView textView = (TextView) itemView.findViewById(R.id.task_detail_text);
             textView.setText(mList.get(i).getTaskPointName());
-            if (TaskPointStatusString.TASK_POINT_ISREADED == mList.get(i).getRecordStatus()){
+            if (TaskPointStatusString.TASK_POINT_ISREADED == mList.get(i).getRecordStatus()) {
                 itemView.setBackgroundResource(R.color.color_low_gray);
-            }else if (TaskPointStatusString.TASK_POINT_ISSAVED == mList.get(i).getRecordStatus()){
+            } else if (TaskPointStatusString.TASK_POINT_ISSAVED == mList.get(i).getRecordStatus()) {
                 itemView.setBackgroundResource(R.color.gray);
             }
             return itemView;

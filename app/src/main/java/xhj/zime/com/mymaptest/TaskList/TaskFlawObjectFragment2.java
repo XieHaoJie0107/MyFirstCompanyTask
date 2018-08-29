@@ -2,11 +2,13 @@ package xhj.zime.com.mymaptest.TaskList;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import xhj.zime.com.mymaptest.Model.TaskPoint;
 import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
@@ -37,6 +41,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdapter.OnItemClickListener, View.OnClickListener {
     private TextView mSave;
+    private EditText flawDesc;
     SpinnerChooseAdapter adapter1, adapter2;
     List<String> list1 = new ArrayList<>();
     List<String> list2 = new ArrayList<>();
@@ -54,6 +59,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
 
     private int mCurrentImg;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +67,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
         initData();
         mTextView1 = (TextView) view.findViewById(R.id.flaw_level);
         mTextView2 = (TextView) view.findViewById(R.id.flaw_leixing);
+        flawDesc = (EditText) view.findViewById(R.id.flaw_desc);
         photo1 = (ImageView) view.findViewById(R.id.photo1);
         photo2 = (ImageView) view.findViewById(R.id.photo2);
         photo3 = (ImageView) view.findViewById(R.id.photo3);
@@ -95,7 +102,7 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
 
     @Override
     public void onItemClick(View view, int position) {
-        TextView textView = (TextView)view;
+        TextView textView = (TextView) view;
         String text = (String) textView.getText();
         if (list1.contains(text)) {
             Toast.makeText(getActivity(), "点击" + text, Toast.LENGTH_SHORT).show();
@@ -185,12 +192,35 @@ public class TaskFlawObjectFragment2 extends Fragment implements BaseSpinnerAdap
                 mCurrentImg = 3;
                 break;
             case R.id.save:
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                int userId = preferences.getInt("userId", -1);
+                TaskPoint taskPoint = (TaskPoint) getActivity().getIntent().getSerializableExtra("taskPoint");
+                String taskPointName = taskPoint.getTaskPointName();
                 SQLiteDatabase db = new SQLdm().openDatabase(getContext());
                 ContentValues values = new ContentValues();
                 values.put("is_record", TaskPointStatusString.TASK_POINT_ISSAVED);
-                db.update("taskpoint",values,"",new String[]{});
+                db.update("taskpoint", values, "task_point_name = ?",
+                        new String[]{taskPointName});
+                values.clear();
+                Date date = new Date();
+                String strDateFormat = "yyyy-MM-dd HH:mm:ss";
+                SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+                String format = sdf.format(date);
+                values.put("user_id", userId);
+                values.put("record_time", format);
+                values.put("flaw_explain", flawDesc.getText().toString());
+                values.put("flaw_level_name", mTextView1.getText().toString());
+                values.put("flaw_type_name", mTextView2.getText().toString());
+                db.insert("flawlist", null, values);
+
+//                    values.clear();
+//                    values.put("user_id",userId);
+//                    values.put("file_uri",uri);
+//                    db.insert("adjunctlist",null,values);
+
                 db.close();
-                Toast.makeText(getContext(),"111111",Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+                Toast.makeText(getContext(), R.string.success, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import xhj.zime.com.mymaptest.bean.AdjunctBean;
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
 import xhj.zime.com.mymaptest.bean.BaseDataBean;
 import xhj.zime.com.mymaptest.bean.DataBean;
@@ -47,19 +48,6 @@ public class Utility {
         return null;
     }
 
-    public static TaskBeansBean handleTaskBeansResponse(String response){
-        if (!TextUtils.isEmpty(response)){
-            try {
-                JSONObject jsonObject = new JSONObject(response);
-                String userString  = jsonObject.toString();
-                Gson gson = new Gson();
-                return gson.fromJson(userString,TaskBeansBean.class);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
     public static DataBean handleDataResponse(String response){
         if (!TextUtils.isEmpty(response)){
             Gson gson = new Gson();

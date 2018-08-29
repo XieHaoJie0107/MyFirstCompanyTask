@@ -1,8 +1,10 @@
 package xhj.zime.com.mymaptest.TaskList;
 
 import android.content.SharedPreferences;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -12,12 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import xhj.zime.com.mymaptest.R;
 import xhj.zime.com.mymaptest.SUser.TaskPointStatusString;
 import xhj.zime.com.mymaptest.SqliteDatabaseCollector.SQLdm;
+import xhj.zime.com.mymaptest.Util.HttpUtil;
 
 public class TaskFlawObjectFragment extends Fragment{
+    private ImageView photo1,photo2,photo3;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -25,11 +32,49 @@ public class TaskFlawObjectFragment extends Fragment{
         EditText flawJiLu = (EditText) view.findViewById(R.id.flaw_jilu);
         EditText flawLevel = (EditText) view.findViewById(R.id.flaw_level);
         EditText flawJiLuTime = (EditText) view.findViewById(R.id.flaw_jilu_time);
-//        SQLiteDatabase db = new SQLdm().openDatabase(getActivity());
+        photo1 = (ImageView) view.findViewById(R.id.photo1);
+        photo2 = (ImageView) view.findViewById(R.id.photo2);
+        photo3 = (ImageView) view.findViewById(R.id.photo3);
+//        Glide.with(getActivity()).load("content://xhj.zime.com.mymaptest.fileprovider/my_imgs/Android/data/xhj.zime.com.mymaptest/cache/easyasset20180829145018.jpg").into(photo3);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int userId = preferences.getInt("userId",-1);
-//        Cursor cursor = db.rawQuery("select hasflaw from taskpoint where user_id = ? ", new String[]{userId+""});
+        SQLiteDatabase db = new SQLdm().openDatabase(getActivity());
+        Cursor cursor1 = db.rawQuery("select * from flawlist where user_id = ?", new String[]{userId+""});
+        if (cursor1.moveToNext()){
+            flawJiLu.setText(cursor1.getString(cursor1.getColumnIndex("flaw_explain")));
+            flawLevel.setText(cursor1.getString(cursor1.getColumnIndex("flaw_level_name")));
+            flawJiLuTime.setText(cursor1.getString(cursor1.getColumnIndex("record_time")));
+        }
 
+        Cursor cursor = db.rawQuery("select * from adjunctlist where user_id = ?", new String[]{userId + ""});
+        int current = 1;
+        while(cursor.moveToNext()){
+            if (cursor.getInt(cursor.getColumnIndex("file_no")) != 0 && current == 1){
+                String filePath = cursor.getString(cursor.getColumnIndex("file_path"));
+                Glide.with(getActivity()).load(HttpUtil.baseUrl+filePath).into(photo1);
+                current++;
+            }else if (cursor.getInt(cursor.getColumnIndex("file_no")) != 0 && current == 2){
+                String filePath = cursor.getString(cursor.getColumnIndex("file_path"));
+                Glide.with(getActivity()).load(HttpUtil.baseUrl+filePath).into(photo2);
+                current++;
+            }else {
+//                if (cursor.getInt(cursor.getColumnIndex("file_no")) == 0 ){
+//                    String uri = cursor.getString(cursor.getColumnIndex("file_uri"));
+//                    String[] split = uri.split(",");
+//                    for (String a: split){
+//                        if (current == 1){
+//                            Glide.with(getActivity()).load(a).into(photo1);
+//                        }else if (current == 2){
+//                            Glide.with(getActivity()).load(a).into(photo2);
+//                        }else if (current == 3){
+//                            Glide.with(getActivity()).load(a).into(photo3);
+//                        }
+//                        current++;
+//                    }
+//                }
+            }
+        }
+        db.close();
         return view;
     }
 

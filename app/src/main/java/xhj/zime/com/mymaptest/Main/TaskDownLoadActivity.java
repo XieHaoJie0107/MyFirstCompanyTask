@@ -45,6 +45,7 @@ import xhj.zime.com.mymaptest.TaskList.SpinnerChooseAdapter;
 import xhj.zime.com.mymaptest.TaskList.SpinnerUtils;
 import xhj.zime.com.mymaptest.Util.HttpUtil;
 import xhj.zime.com.mymaptest.Util.Utility;
+import xhj.zime.com.mymaptest.bean.AdjunctBean;
 import xhj.zime.com.mymaptest.bean.BaseDataBack;
 import xhj.zime.com.mymaptest.bean.DataBean;
 import xhj.zime.com.mymaptest.bean.TaskBeansBean;
@@ -285,6 +286,17 @@ public class TaskDownLoadActivity extends AppCompatActivity implements View.OnCl
                         values.put("user_id",user_id);
                         values.put("is_record", TaskPointStatusString.TASK_POINT_NOTREADED);
                         db.insert("taskpoint", null, values);
+                    }
+                    List<AdjunctBean> adjunctBeans = dataBean.getAdjunctBeans();
+                    for (AdjunctBean x: adjunctBeans){
+                        values.clear();
+                        values.put("user_id",user_id);
+                        values.put("add_time",x.getAdd_time());
+                        values.put("file_name",x.getFile_name());
+                        values.put("file_no",x.getFile_no());
+                        values.put("file_path",x.getFile_path());
+                        values.put("flaw_id",x.getFlaw_id());
+                        db.insert("adjunctlist",null,values);
                     }
                     db.close();
                 } else {
