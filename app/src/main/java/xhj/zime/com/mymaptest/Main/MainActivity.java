@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void syncBaseData() {
-        String address = "http://192.168.1.225:8080/data/base?version=0";
+        String address = "http://192.168.1.233:8080/data/base?version=0";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

@@ -166,10 +166,10 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 getActivity().startActivity(intent1);
                 break;
             case R.id.upload:
-                View view2 = LayoutInflater.from(getContext()).inflate(R.layout.alert_dialog_upload,null,false);
-                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                View view2 = LayoutInflater.from(getActivity()).inflate(R.layout.alert_dialog_upload, null);
+                final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                         .setView(view2)
-                        .setCancelable(false)
+                        .setCancelable(true)
                         .create();
                 alertDialog.show();
                 String[] uris = new String[3];
@@ -189,30 +189,47 @@ public class PersonalCenterFragment extends Fragment implements View.OnClickList
                 db.close();
                 File[] files = new File[3];
                 for (int i = 0; i < uris.length; i++) {
-                    if (uris[i] != null){
+                    if (uris[i] != null) {
                         files[i] = new File(uris[i]);
                     }
                 }
+                final int[] count = {0};
                 for (int i = 0; i < uris.length; i++) {
-                    if (uris[i] != null){
-                        HttpUtil.sendPostHttpRequest(address, files[i].getPath(), new Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.i(TAG, "onFailure: ");
-                            }
 
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseText = response.body().string();
-                                BaseDataBack baseDataBack = Utility.handleBaseDataBackResponse(responseText);
-                                Object data = baseDataBack.getData();
-                                Log.i(TAG, "onResponse: "+data.toString());
-                            }
-                        });
-                    }
+                    HttpUtil.sendPostHttpRequest(address, files[i].getPath(), new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.i(TAG, "onFailure: ");
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    alertDialog.dismiss();
+                                    Toast.makeText(getContext(),"任务上传失败!",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseText = response.body().string();
+                            BaseDataBack baseDataBack = Utility.handleBaseDataBackResponse(responseText);
+                            Object data = baseDataBack.getData();
+                            Log.i(TAG, "onResponse: " + data.toString());
+                            count[0]++;
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (count[0] == 3){
+                                        alertDialog.dismiss();
+                                        Toast.makeText(getContext(),"任务上传成功!",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+                    });
+
                 }
-                alertDialog.dismiss();
-                Toast.makeText(getContext(),"上传成功!",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.power_off_login:
                 ActivityCollector.finishAll();
